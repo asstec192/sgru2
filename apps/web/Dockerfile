@@ -19,11 +19,14 @@ WORKDIR /app
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN corepack enable
-RUN pnpm install --frozen-lockfile
+RUN pnpm install 
 
 # Build the project
 COPY --from=builder /app/out/full/ .
 ENV NEXT_TELEMETRY_DISABLED 1
+# Define a build-time argument
+ARG NEXT_PUBLIC_API_URL
+
 RUN pnpm dlx turbo run build --filter=web
 
 FROM base AS runner

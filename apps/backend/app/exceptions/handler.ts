@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import { ZodError } from 'zod'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -13,6 +14,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof ZodError) {
+      // Retorna o status 422 com os erros de validação
+      return ctx.response.status(422).send({
+        message: 'Erro de validação',
+        errors: error.format(), // Formata os erros do Zod
+      })
+    }
     return super.handle(error, ctx)
   }
 

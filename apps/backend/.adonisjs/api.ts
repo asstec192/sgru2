@@ -5,135 +5,234 @@
 // --------------------------------------------------
 
 import type { MakeTuyauRequest, MakeNonSerializedTuyauResponse } from '@tuyau/utils/types'
-import type { InferInput } from '@vinejs/vine/types'
+import { z } from 'zod'
 
 type EmergenciesGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['findMany'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['findMany'],
+    true
+  >
 }
 type EmergenciesCountBytypeGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByType'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByType'],
+    true
+  >
 }
 type EmergenciesCountByreasonGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByReason'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByReason'],
+    true
+  >
 }
 type EmergenciesCountBycalltypeGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByCallType'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByCallType'],
+    true
+  >
 }
 type EmergenciesCountByregionGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByRegion'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByRegion'],
+    true
+  >
 }
 type EmergenciesCountByneighborhoodGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByNeighborhood'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByNeighborhood'],
+    true
+  >
 }
 type EmergenciesCountByriskGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByRisk'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByRisk'],
+    true
+  >
 }
 type EmergenciesCountByhospitalGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByHospital'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByHospital'],
+    true
+  >
 }
 type EmergenciesCountByintercurrenceGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByIntercurrence'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByIntercurrence'],
+    true
+  >
 }
 type EmergenciesCountByvehiclesGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['countByVehicles'], true>
+  request: MakeTuyauRequest<
+    z.infer<(typeof import('../../../packages/validators/dist/period.d.ts'))['periodSchema']>
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['countByVehicles'],
+    true
+  >
 }
 type EmergenciesIdGetHead = {
   request: unknown
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['findOne'], false>
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['findOne'],
+    false
+  >
 }
 type EmergenciesIdPatientsGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/period.ts')['periodValidator']>>
-  response: MakeNonSerializedTuyauResponse<import('../app/controllers/emergencies_controller.ts').default['patients'], true>
+  request: unknown
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/emergencies_controller.ts').default['findEmergencyPatients'],
+    false
+  >
+}
+type AuthSignupPost = {
+  request: MakeTuyauRequest<
+    z.infer<
+      (typeof import('../../../packages/validators/dist/credentials.d.ts'))['credentialsSchema']
+    >
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/session_controller.ts').default['singUp'],
+    true
+  >
+}
+type AuthSigninGetHead = {
+  request: MakeTuyauRequest<
+    z.infer<
+      (typeof import('../../../packages/validators/dist/credentials.d.ts'))['credentialsSchema']
+    >
+  >
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/session_controller.ts').default['signIn'],
+    true
+  >
+}
+type AuthSignoutPost = {
+  request: unknown
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/session_controller.ts').default['signOut'],
+    false
+  >
+}
+type AuthGetsessionGetHead = {
+  request: unknown
+  response: MakeNonSerializedTuyauResponse<
+    import('../app/controllers/session_controller.ts').default['getSession'],
+    false
+  >
 }
 export interface ApiDefinition {
-  'emergencies': {
-    '$url': {
-    };
-    '$get': EmergenciesGetHead;
-    '$head': EmergenciesGetHead;
+  emergencies: {
+    '$url': {}
+    '$get': EmergenciesGetHead
+    '$head': EmergenciesGetHead
     'count': {
-      'byType': {
-        '$url': {
-        };
-        '$get': EmergenciesCountBytypeGetHead;
-        '$head': EmergenciesCountBytypeGetHead;
-      };
-      'byReason': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByreasonGetHead;
-        '$head': EmergenciesCountByreasonGetHead;
-      };
-      'byCallType': {
-        '$url': {
-        };
-        '$get': EmergenciesCountBycalltypeGetHead;
-        '$head': EmergenciesCountBycalltypeGetHead;
-      };
-      'byRegion': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByregionGetHead;
-        '$head': EmergenciesCountByregionGetHead;
-      };
-      'byNeighborhood': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByneighborhoodGetHead;
-        '$head': EmergenciesCountByneighborhoodGetHead;
-      };
-      'byRisk': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByriskGetHead;
-        '$head': EmergenciesCountByriskGetHead;
-      };
-      'byHospital': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByhospitalGetHead;
-        '$head': EmergenciesCountByhospitalGetHead;
-      };
-      'byIntercurrence': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByintercurrenceGetHead;
-        '$head': EmergenciesCountByintercurrenceGetHead;
-      };
-      'byVehicles': {
-        '$url': {
-        };
-        '$get': EmergenciesCountByvehiclesGetHead;
-        '$head': EmergenciesCountByvehiclesGetHead;
-      };
-    };
+      byType: {
+        $url: {}
+        $get: EmergenciesCountBytypeGetHead
+        $head: EmergenciesCountBytypeGetHead
+      }
+      byReason: {
+        $url: {}
+        $get: EmergenciesCountByreasonGetHead
+        $head: EmergenciesCountByreasonGetHead
+      }
+      byCallType: {
+        $url: {}
+        $get: EmergenciesCountBycalltypeGetHead
+        $head: EmergenciesCountBycalltypeGetHead
+      }
+      byRegion: {
+        $url: {}
+        $get: EmergenciesCountByregionGetHead
+        $head: EmergenciesCountByregionGetHead
+      }
+      byNeighborhood: {
+        $url: {}
+        $get: EmergenciesCountByneighborhoodGetHead
+        $head: EmergenciesCountByneighborhoodGetHead
+      }
+      byRisk: {
+        $url: {}
+        $get: EmergenciesCountByriskGetHead
+        $head: EmergenciesCountByriskGetHead
+      }
+      byHospital: {
+        $url: {}
+        $get: EmergenciesCountByhospitalGetHead
+        $head: EmergenciesCountByhospitalGetHead
+      }
+      byIntercurrence: {
+        $url: {}
+        $get: EmergenciesCountByintercurrenceGetHead
+        $head: EmergenciesCountByintercurrenceGetHead
+      }
+      byVehicles: {
+        $url: {}
+        $get: EmergenciesCountByvehiclesGetHead
+        $head: EmergenciesCountByvehiclesGetHead
+      }
+    }
     ':id': {
-      '$url': {
-      };
-      '$get': EmergenciesIdGetHead;
-      '$head': EmergenciesIdGetHead;
-      'patients': {
-        '$url': {
-        };
-        '$get': EmergenciesIdPatientsGetHead;
-        '$head': EmergenciesIdPatientsGetHead;
-      };
-    };
-  };
+      $url: {}
+      $get: EmergenciesIdGetHead
+      $head: EmergenciesIdGetHead
+      patients: {
+        $url: {}
+        $get: EmergenciesIdPatientsGetHead
+        $head: EmergenciesIdPatientsGetHead
+      }
+    }
+  }
+  auth: {
+    signUp: {
+      $url: {}
+      $post: AuthSignupPost
+    }
+    signIn: {
+      $url: {}
+      $get: AuthSigninGetHead
+      $head: AuthSigninGetHead
+    }
+    signOut: {
+      $url: {}
+      $post: AuthSignoutPost
+    }
+    getSession: {
+      $url: {}
+      $get: AuthGetsessionGetHead
+      $head: AuthGetsessionGetHead
+    }
+  }
 }
-const routes = [
-] as const;
+const routes = [] as const
 export const api = {
   routes,
-  definition: {} as ApiDefinition
+  definition: {} as ApiDefinition,
 }

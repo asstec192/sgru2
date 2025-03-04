@@ -3,17 +3,17 @@ FROM node:20.12.2-alpine3.18 AS base
 
 # Stage 1: Builder (prune and prepare the workspace)
 FROM base AS builder
-RUN apk add --no-cache libc6-compat
-RUN apk update
+RUN apk add --no-cache libc6-compat python3 make g++ \
+    && apk update
 WORKDIR /app
 RUN npm install -g turbo
-COPY . .
+COPY . . 
 RUN turbo prune --scope=backend --docker
 
 # Stage 2: Install dependencies
 FROM base AS installer
-RUN apk add --no-cache libc6-compat
-RUN apk update
+RUN apk add --no-cache libc6-compat python3 make g++ \
+    && apk update
 WORKDIR /app
 
 # Copy pruned workspace files
@@ -22,17 +22,23 @@ COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Enable corepack and install dependencies
 RUN corepack enable
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
+
+# **Copiar o Prisma e gerar o Prisma Client**
+COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+RUN npx prisma generate --schema=apps/backend/prisma/schema.prisma
 
 # Copy the full pruned workspace
 COPY --from=builder /app/out/full/ .
 
 # Build the project
-RUN pnpm dlx turbo run build --filter=backend 
+RUN pnpm dlx turbo run build --filter=backend
 
 # Stage 3: Runner (production image)
 FROM base AS runner
+
 ENV NODE_ENV=production
+
 WORKDIR /app
 
 # Don't run production as root
@@ -41,11 +47,7 @@ RUN adduser --system --uid 1001 adonisjs
 USER adonisjs
 
 # Copy necessary files from the installer stage
-##COPY --from=installer /app/apps/backend/package.json .
-##COPY --from=installer /app/node_modules /app/node_modules
-##COPY --from=installer /app/apps/backend/build /app
-
 COPY --from=installer /app .
 
-# Start the application
-CMD ["node", "apps/backend/build/bin/server.js"]
+# **Rodar migrações no banco de dados antes de iniciar o servidor**
+CMD npx prisma db push --schema=apps/backend/prisma/schema.prisma && node apps/backend/build/bin/server.js

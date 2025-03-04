@@ -1,0 +1,25 @@
+{
+  "name": "@workspace/validators",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "./*": {
+    "types": "./src/*.ts",
+    "default": "./dist/*.js"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^2.2.3",
+    "@types/node": "^22.9.0",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.6.3"
+  }
+}

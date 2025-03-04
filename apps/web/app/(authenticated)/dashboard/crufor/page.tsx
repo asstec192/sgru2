@@ -4,12 +4,12 @@ import { CallsChart } from "@/components/charts/calls-chart";
 import { usePeriod } from "@/hooks/use-period";
 import { DoctorsTable } from "./doctors-table";
 import { useQueries } from "@tanstack/react-query";
-import { queryFactory } from "@/lib/query-keys-factory";
 import { RiskChart } from "@/components/charts/risk-chart";
 import { EmergencyTypeChart } from "@/components/charts/emergency-type-chart";
 import { EmergencyReasonChart } from "@/components/charts/emergency-reason-chart";
 import { RegionChart } from "@/components/charts/region-chart";
 import { NeighborhoodChart } from "@/components/charts/neighborhood-chart";
+import { queryFactory } from "@/lib/query-factory";
 
 export default function CruforPage() {
   const { period, shift } = usePeriod();

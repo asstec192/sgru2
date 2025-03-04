@@ -27,6 +27,7 @@ server.use([
   () => import('#middleware/force_json_response_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
   () => import('@tuyau/superjson/superjson_middleware'),
+  //() => import('#middleware/handle_host_middleware')
 ])
 
 /**
@@ -36,6 +37,7 @@ server.use([
 router.use([
   () => import('@adonisjs/core/bodyparser_middleware'),
   () => import('@adonisjs/session/session_middleware'),
+  () => import('#middleware/auth_middleware')
 ])
 
 /**

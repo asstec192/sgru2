@@ -3,10 +3,10 @@
 import { DoctorsTable } from "../crufor/doctors-table";
 import { usePeriod } from "@/hooks/use-period";
 import { useQueries } from "@tanstack/react-query";
-import { queryFactory } from "@/lib/query-keys-factory";
 import { RiskChart } from "@/components/charts/risk-chart";
 import { EmergencyTypeChart } from "@/components/charts/emergency-type-chart";
 import { EmergencyReasonChart } from "@/components/charts/emergency-reason-chart";
+import { queryFactory } from "@/lib/query-factory";
 
 export default function SamuforPage() {
   const { period, shift } = usePeriod();

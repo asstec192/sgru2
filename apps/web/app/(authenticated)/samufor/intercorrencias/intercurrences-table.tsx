@@ -1,7 +1,7 @@
 "use client";
 
 import { usePeriod } from "@/hooks/use-period";
-import { queryFactory } from "@/lib/query-keys-factory";
+import { queryFactory } from "@/lib/query-factory";
 import { useQuery } from "@tanstack/react-query";
 import {
   DataTable,

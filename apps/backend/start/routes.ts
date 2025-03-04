@@ -6,8 +6,11 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
-
+//const HospitalsController = () => import('#controllers/hospitals_controller')
 const EmergenciesController = () => import('#controllers/emergencies_controller')
+//const EquipmentsController = () => import('#controllers/equipments_controller')
+///const SpecialtiesController = () => import('#controllers/specialties_controller')
+const SessionController = () => import('#controllers/session_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/emergencies', [EmergenciesController, 'findMany'])
@@ -21,7 +24,7 @@ router.get('/emergencies/count/byHospital', [EmergenciesController, 'countByHosp
 router.get('/emergencies/count/byIntercurrence', [EmergenciesController, 'countByIntercurrence'])
 router.get('/emergencies/count/byVehicles', [EmergenciesController, 'countByVehicles'])
 router.get('/emergencies/:id', [EmergenciesController, 'findOne'])
-router.get('/emergencies/:id/patients', [EmergenciesController, 'patients'])
+router.get('/emergencies/:id/patients', [EmergenciesController, 'findEmergencyPatients'])
 //
 //router.get("/vehicles/report")
 //router.get("/vehicles/types")
@@ -40,11 +43,18 @@ router.get('/emergencies/:id/patients', [EmergenciesController, 'patients'])
 //router.get("/hospitals/reports")
 //router.get("/hospitals/reports/:id")
 //router.post("/hospitals/reports")
-//router.get("/hospitals/:id/equipments")
-//router.get("/hospitals/:id/specialties")
+//router.get('/hospitals/:id/equipments', [HospitalsController, 'findEquipments'])
+//router.get('/hospitals/:id/specialties', [HospitalsController, 'findSpecialties'])
 //
-//router.get("/equipments")
-//router.post("/equipments")
+//router.get('/equipments', [EquipmentsController, 'findMany'])
+//router.post('/equipments', [EquipmentsController, 'create'])
+//router.patch('/equipements/:id', [EquipmentsController, 'update'])
 //
-//router.get("/specialties")
-//router.post("/specialties")
+// /router.get('/specialties', [SpecialtiesController, 'findMany'])
+// /router.post('/specialties', [SpecialtiesController, 'create'])
+// /router.patch('/specialties/:id', [SpecialtiesController, 'update'])
+
+router.post('/auth/signUp', [SessionController, 'singUp'])
+router.get('/auth/signIn', [SessionController, 'signIn'])
+router.post('/auth/signOut', [SessionController, 'signOut'])
+router.get('/auth/getSession', [SessionController, 'getSession'])

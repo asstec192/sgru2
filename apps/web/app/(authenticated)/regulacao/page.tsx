@@ -4,7 +4,7 @@ import { CallsChart } from "@/components/charts/calls-chart";
 import { DoctorsTable } from "../dashboard/crufor/doctors-table";
 import { usePeriod } from "@/hooks/use-period";
 import { useQuery } from "@tanstack/react-query";
-import { queryFactory } from "@/lib/query-keys-factory";
+import { queryFactory } from "@/lib/query-factory";
 
 export default function RegulacaoPage() {
   const { period, shift } = usePeriod();

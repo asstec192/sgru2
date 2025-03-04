@@ -1,0 +1,492 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+generator kysely {
+  provider     = "prisma-kysely"
+  output       = "../types"
+  fileName     = "db.types.ts"
+  enumFileName = "enums.ts"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     Int                 @id(map: "PK__UsuarioD__3213E83FD908D34E") @default(autoincrement())
+  esusUserId             Int                 @unique(map: "UQ__UsuarioD__610320E2D506C8B9") @map("operadorID")
+  password               String              @map("senha") @db.VarChar(60)
+  roleId                 Int?                @map("role")
+  createdAt              DateTime?           @default(now(), map: "DF__UsuarioDa__creat__3441F748") @db.DateTime
+  updatedAt              DateTime?           @default(now(), map: "DF__UsuarioDa__updat__35361B81") @updatedAt @db.DateTime
+  hospitalReportsCreated DestinationReport[] @relation("criador")
+  hospitalReportsUpdated DestinationReport[] @relation("editor")
+  role                   Role?               @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__UsuarioDas__role__12ABF953")
+  esusUser               EsusUser            @relation(fields: [esusUserId], references: [id])
+
+  @@map("UsuarioDashboard")
+}
+
+model EmergencyRisk {
+  id          Int         @id(map: "PK_CLASSIFICACAO_RISCO") @default(autoincrement()) @map("RISCOCOD")
+  description String?     @map("RISCODS") @db.VarChar(20)
+  emergency   Emergency[]
+
+  @@map("CLASSIFICACAO_RISCO")
+}
+
+model TechnicalDecision {
+  id          Int     @id @default(autoincrement()) @map("TransporteID")
+  description String? @map("TransporteDS") @db.NVarChar(255)
+
+  @@map("DECISAO TECNICA")
+}
+
+model VehicleRequest {
+  id             Int       @id(map: "PK_FORMEQUIPE_SolicitacaoVeiculo") @default(autoincrement()) @map("SolicitacaoID")
+  emergencyId    BigInt    @map("OcorrenciaID")
+  vehicleTypeId  String    @map("VeiculoTP") @db.NVarChar(10)
+  sequence       Int?      @map("VeiculoSEQ")
+  createdAt      DateTime? @map("RegistroDT") @db.DateTime
+  doctorId       Int?      @map("OperadorID")
+  status         String?   @map("StatusEnvio") @db.NVarChar(1)
+  fleetManagerId Int?      @map("OPERADORID_ENVIO")
+
+  emergency    Emergency   @relation(fields: [emergencyId], references: [id])
+  vehicleType  VehicleType @relation(fields: [vehicleTypeId], references: [id])
+  doctor       EsusUser?   @relation("doctor", fields: [doctorId], references: [id])
+  fleetManager EsusUser?   @relation("fleetManager", fields: [fleetManagerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("FORMEQUIPE_SolicitacaoVeiculo")
+}
+
+model Conduct {
+  id          Int       @id @default(autoincrement()) @map("CONDUTAID")
+  emergencyId BigInt    @map("OCORRENCIAID")
+  patientId   Int?      @map("VITIMAID")
+  vehicleId   Int?      @map("VEICULOID")
+  createdAt   DateTime? @map("DTHR_CONDUTA") @db.DateTime
+  description String?   @map("OBS_MEDICO") @db.VarChar(500)
+  emergency   Emergency @relation(fields: [emergencyId], references: [id])
+  patient     Patient?  @relation(fields: [emergencyId, patientId], references: [emergencyId, id])
+  vehicle     Vehicle?  @relation(fields: [vehicleId], references: [id])
+
+  @@map("HISTORICO_CONDUTA")
+}
+
+model CallType {
+  id          Int         @id(map: "PK_LigacaoTP") @default(autoincrement()) @map("LigacaoTPID")
+  description String?     @map("LigacaoTPDS") @db.NVarChar(20)
+  Emergency   Emergency[]
+
+  @@map("LigacaoTP")
+}
+
+model Address {
+  id           Int     @id(map: "PK_LOGRADOUROS") @default(autoincrement()) @map("COD_LOGRADOURO")
+  ibgeCode     String? @map("COD_MUNICIPIO_IBGE") @db.VarChar(6)
+  uf           String? @map("SIGLA_UF") @db.VarChar(2)
+  city         String? @map("NM_CIDADE") @db.VarChar(50)
+  neighborhood String? @map("NM_BAIRRO") @db.VarChar(75)
+  complement   String? @map("DS_COMPLEMENTO") @db.VarChar(75)
+  typeCode     String? @map("COD_TP_LOGRADOURO") @db.VarChar(25)
+  street       String? @map("DS_ENDERECO") @db.VarChar(250)
+  cep          String? @map("NUM_CEP") @db.VarChar(8)
+  regionId     Int?    @map("RegionalID")
+  region       Region? @relation(fields: [regionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_RegionaisID")
+
+  @@map("LOGRADOUROS")
+}
+
+model VehicleType {
+  id             String           @id(map: "PK_VeiculosTP") @map("VeiculoTP") @db.NVarChar(10)
+  description    String?          @map("VeiculoDS") @db.NVarChar(50)
+  active         String?          @map("RegAtivo") @db.NVarChar(1)
+  VehicleRequest VehicleRequest[]
+
+  @@map("VeiculosTP")
+}
+
+model Region {
+  id          Int       @id(map: "PK__Regionai__0C10CF7B769D4070") @default(autoincrement()) @map("RegionalID")
+  description String?   @map("RegionalDS") @db.VarChar(20)
+  address     Address[]
+
+  @@map("Regionais")
+}
+
+model Decision {
+  id                        Int       @id @default(autoincrement()) @map("DECISAOID")
+  emergencyId               BigInt?   @map("OCORRENCIAID")
+  patientId                 Int?      @map("VITIMAID")
+  technicalDecisionId       Int?      @map("DECISAO_GESTORAID")
+  technicalDecisionAuthorId Int?      @map("OPERADORID_DECISAO_GESTORAID")
+  technicalDecisionDate     DateTime? @map("DTHR_DECISAO_GESTORAID") @db.DateTime
+  destinationId             Int?      @map("DESTINOID")
+  destinationAuthorId       Int?      @map("OPERADORID_DESTINOID")
+  destinationDate           DateTime? @map("DTHR_DESTINOID") @db.DateTime
+  intercurrenceId           Int?      @map("INTERCORRENCIAID")
+  intercurrenceAuthorId     Int?      @map("OPERADORID_INTERCORRENCIAID")
+  intercurrenceDate         DateTime? @map("DTHR_INTERCORRENCIAID") @db.DateTime
+  observation               String?   @map("OBSERVACAO") @db.VarChar(300)
+  status                    String?   @map("STATUS") @db.Char(1)
+
+  @@map("HISTORICO_DECISAO_GESTORA")
+}
+
+model Intercurrence {
+  id          Int     @id(map: "PK_Intercorrencias") @default(autoincrement()) @map("IntercorrenciaID")
+  description String? @map("IntercorrenciaDS") @db.NVarChar(100)
+
+  @@map("Intercorrencias")
+}
+
+model Emergency {
+  id             BigInt           @id(map: "PK_Ocorrencia") @map("OcorrenciaID")
+  reasonId       Int?             @map("MotivoID")
+  typeId         Int?             @map("TipoID")
+  cityId         String?          @map("MunicipioID") @db.NVarChar(50)
+  callTypeId     Int?             @map("LigacaoTPID")
+  riskId         Int?             @map("RISCOCOD")
+  complain       String?          @map("QueixaDS") @db.NText
+  street         String?          @map("Logradouro") @db.VarChar(510)
+  neighborhood   String?          @map("Bairro") @db.NVarChar(50)
+  createdAt      DateTime?        @map("DtHr") @db.DateTime
+  finishedAt     DateTime?        @map("OcorrenciaFinalDT") @db.DateTime
+  reason         EmergencyReason? @relation(fields: [typeId, reasonId], references: [emergencyTypeId, id])
+  type           EmergencyType?   @relation(fields: [typeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  callType       CallType?        @relation(fields: [callTypeId], references: [id])
+  risk           EmergencyRisk?   @relation(fields: [riskId], references: [id])
+  VehicleRequest VehicleRequest[]
+  Conduct        Conduct[]
+  EmergencyAudit EmergencyAudit[]
+
+  @@map("Ocorrencia")
+}
+
+model EmergencyType {
+  id              Int               @id(map: "PK_Tipo") @default(autoincrement()) @map("TipoID")
+  description     String?           @map("TipoDS") @db.NVarChar(50)
+  Emergency       Emergency[]
+  EmergencyReason EmergencyReason[]
+
+  @@map("Tipo")
+}
+
+model EmergencyReason {
+  emergencyTypeId Int           @map("TipoID")
+  id              Int           @default(autoincrement()) @map("MotivoID")
+  description     String?       @map("MotivoDS") @db.NVarChar(100)
+  type            EmergencyType @relation(fields: [emergencyTypeId], references: [id])
+  Emergency       Emergency[]
+
+  @@id([emergencyTypeId, id], map: "PK_Motivo")
+  @@map("Motivo")
+}
+
+model EmergencyAudit {
+  emergencyId    BigInt    @map("OcorrenciaID")
+  patientId      Int       @map("VitimaID")
+  originUserDate DateTime? @map("OrigemDTHR") @db.DateTime
+  senderId       Int?      @map("OperadorOrigem")
+  receiverId     Int       @map("OperadorDestino")
+  createdAt      DateTime  @map("RegistroDT") @db.DateTime
+  emergency      Emergency @relation(fields: [emergencyId], references: [id])
+  patient        Patient   @relation(fields: [emergencyId, patientId], references: [emergencyId, id])
+  sender         EsusUser? @relation("sender", fields: [senderId], references: [id])
+  receiver       EsusUser  @relation("receiver", fields: [receiverId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([emergencyId, patientId, receiverId, createdAt], map: "PK_PosicaoOcorrencias")
+  @@map("PosicaoOcorrencias")
+}
+
+model EsusUser {
+  id                           Int              @id @default(autoincrement()) @map("OperadorID")
+  name                         String?          @map("OperadorNM") @db.NVarChar(50)
+  username                     String?          @map("OperadorApelido") @db.NVarChar(20)
+  typeId                       String?          @map("ProfisionalTP") @db.NVarChar(50)
+  dashboarUser                 User?
+  vehicleRequestAsDoctor       VehicleRequest[] @relation("doctor")
+  vehicleRequestAsFleetManager VehicleRequest[] @relation("fleetManager")
+  emergencyAuditAsSender       EmergencyAudit[] @relation("sender")
+  emergencyAuditAsReceiver     EmergencyAudit[] @relation("receiver")
+
+  @@map("OperadoresDados")
+}
+
+model Vehicle {
+  id       Int       @id(map: "PK_Veiculos") @default(autoincrement()) @map("VeiculoID")
+  type     String?   @map("VeiculoTP") @db.NVarChar(10)
+  name     String?   @map("VeiculoDS") @db.NVarChar(50)
+  statusId String?   @map("Status") @db.NVarChar(3)
+  active   String?   @map("RegAtivo") @db.NVarChar(1)
+  Conduct  Conduct[]
+
+  @@map("Veiculos")
+}
+
+model EmergencyVehicle {
+  emergencyId          BigInt    @map("OcorrenciaID")
+  vehicleId            Int       @map("VeiculoID")
+  sequence             Int       @map("VeiculoSEQ")
+  teamDispachedAt      DateTime? @map("EnvioEquipeDT") @db.DateTime
+  baseExitAt           DateTime? @map("SaidaBaseDT") @db.DateTime
+  locationArrivalAt    DateTime? @map("ChegadaLocalDT") @db.DateTime
+  locationExitAt       DateTime? @map("SaidaLocalDT") @db.DateTime
+  destinationArrivalAt DateTime? @map("ChegadaDestinoDT") @db.DateTime
+  destinationExitAt    DateTime? @map("RetornoDestinoDT") @db.DateTime
+  baseArrivalAt        DateTime? @map("ChegadaBaseDT") @db.DateTime
+  vehicleType          String?   @map("tipoVeiculo") @db.VarChar(3)
+
+  @@id([emergencyId, vehicleId, sequence], map: "PK_OcorrenciaMovimentacao")
+  @@map("OcorrenciaMovimentacao")
+}
+
+model Patient {
+  emergencyId     BigInt           @map("OcorrenciaID")
+  id              Int              @default(autoincrement()) @map("VitimaId")
+  name            String?          @map("VitimaNM") @db.NVarChar(255)
+  genderId        Int?             @map("Sexo")
+  age             Int?             @map("Idade")
+  ageTypeId       Int?             @map("IdadeTP")
+  ageType         AgeType?         @relation("Vitimas_IdadeTPToIdadeTP", fields: [ageTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Vitimas_IdadeTP")
+  conducts        Conduct[]
+  emergencyAudits EmergencyAudit[]
+  gender          Gender?          @relation(fields: [genderId], references: [id])
+
+  @@id([emergencyId, id], map: "PK_Vitimas")
+  @@map("Vitimas")
+}
+
+model VehicleStatus {
+  id          String  @id(map: "PK_TBS_Situacao_Veiculo") @map("SituacaoCOD") @db.NVarChar(3)
+  description String? @map("SituacaoDS") @db.NVarChar(40)
+
+  @@map("TBS_Situacao_Veiculo")
+}
+
+model AgeType {
+  id          Int       @id(map: "PK_IdadeTP") @default(autoincrement()) @map("IdadeTP")
+  description String?   @map("IdadeTPDS") @db.NVarChar(20)
+  patients    Patient[] @relation("Vitimas_IdadeTPToIdadeTP")
+
+  @@map("IdadeTP")
+}
+
+model PatientAssessment {
+  emergencyId BigInt   @map("OCORRENCIAID")
+  patientId   Int      @map("VITIMAID")
+  description String?  @map("AVALICAO") @db.VarChar(4000)
+  createdAt   DateTime @map("DTHR") @db.DateTime
+  authorId    Int?     @map("OPERADORID")
+
+  @@id([emergencyId, patientId, createdAt], map: "PK_OCORRENCIA_AVALIACAO_INICIAL")
+  @@map("OCORRENCIA_AVALIACAO_INICIAL")
+}
+
+model Role {
+  id          Int     @id(map: "PK__PerfisDa__3213E83F59F89AF0") @default(autoincrement())
+  description String? @map("descricao") @db.NVarChar(50)
+  acronymn    String? @map("sigla") @db.VarChar(10)
+  users       User[]
+
+  @@map("PerfisDashboard")
+}
+
+model Destination {
+  id      String              @id(map: "PK_UnidadesDestino") @map("UnidadeCOD") @db.NVarChar(8)
+  name    String?             @map("UnidadeDS") @db.NVarChar(50)
+  reports DestinationReport[]
+
+  @@map("UnidadesDestino")
+}
+
+model DestinationReport {
+  id                Int                        @id(map: "PK__UnidadeR__3213E83F4E798F74") @default(autoincrement())
+  destinationId     String?                    @map("unidadeId") @db.NVarChar(8)
+  createdById       Int?                       @map("criadoPorId")
+  updatedById       Int?                       @map("editadoPorId")
+  shift             String?                    @map("turno") @db.VarChar(2)
+  fone              String?                    @map("contato") @db.VarChar(15)
+  contactName       String?                    @map("nomeContato") @db.NVarChar(100)
+  contactHour       String?                    @map("horaContato") @db.VarChar(5)
+  teamLeader        String?                    @map("chefeEquipe") @db.NVarChar(200)
+  observation       String?                    @map("observacao") @db.NVarChar(Max)
+  createdAt         DateTime?                  @default(now(), map: "DF__UnidadeRe__creat__7BC893FB") @db.DateTime
+  updatedAt         DateTime?                  @updatedAt @db.DateTime
+  createdBy         User?                      @relation("criador", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__UnidadeRe__criad__7DB0DC6D")
+  updatedBy         User?                      @relation("editor", fields: [updatedById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__UnidadeRe__edita__7EA500A6")
+  destination       Destination?               @relation(fields: [destinationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__UnidadeRe__unida__7CBCB834")
+  reportEquipments  HospitalReportEquipments[]
+  reportSpecialties HospitalReportSpecialty[]
+
+  @@map("UnidadeRelatorio")
+}
+
+model HospitalReportSpecialty {
+  reportId    Int               @map("relatorioId")
+  specialtyId Int               @map("especialidadeId")
+  count       Int?              @map("quantidade")
+  specialty   Specialty         @relation(fields: [specialtyId], references: [id], onUpdate: NoAction, map: "FK__UnidadeRe__espec__0646226E")
+  report      DestinationReport @relation(fields: [reportId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK__UnidadeRe__relat__0551FE35")
+
+  @@id([reportId, specialtyId], map: "PK__UnidadeR__1344B853D3FC5061")
+  @@map("UnidadeRelatorioEspecialidades")
+}
+
+model HospitalReportEquipments {
+  reportId    Int               @map("relatorioId")
+  equipmentId Int               @map("equipamentoId")
+  count       Int?              @map("quantidade")
+  equipment   Equipment         @relation(fields: [equipmentId], references: [id], onUpdate: NoAction, map: "FK__UnidadeRe__equip__0275918A")
+  report      DestinationReport @relation(fields: [reportId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK__UnidadeRe__relat__01816D51")
+
+  @@id([reportId, equipmentId], map: "PK__UnidadeR__43D81D728C3C5DDB")
+  @@map("UnidadeRelatorioEquipamentos")
+}
+
+model Equipment {
+  id          Int                        @id(map: "PK__Equipame__3213E83FD3E20927") @default(autoincrement())
+  description String?                    @map("descricao") @db.NVarChar(50)
+  reports     HospitalReportEquipments[]
+
+  @@map("Equipamentos")
+}
+
+model Specialty {
+  id          Int                       @id(map: "PK__Especial__3213E83FFF4D91E8") @default(autoincrement())
+  description String?                   @map("descricao") @db.VarChar(50)
+  reports     HospitalReportSpecialty[]
+
+  @@map("Especialidades")
+}
+
+model ProtocolCategory {
+  id                 Int                @id(map: "PK__Dashboar__3213E83F31DF3A99") @default(autoincrement())
+  ancestorCategoryId Int?               @map("categoriaPaiId")
+  name               String             @map("nome") @db.NVarChar(255)
+  createdAt          DateTime           @default(now(), map: "DF__Dashboard__criad__562CFAF8") @map("criadoEm")
+  updatedAt          DateTime           @default(now(), map: "DF__Dashboard__atual__57211F31") @updatedAt @map("atualizadoEm")
+  protocols          Protocol[]
+  ancestorCategory   ProtocolCategory?  @relation("categoria-subcategoria", fields: [ancestorCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_DashboardProtocoloCategoria_Pai")
+  subCategories      ProtocolCategory[] @relation("categoria-subcategoria")
+
+  @@map("DashboardProtocoloCategoria")
+}
+
+model Protocol {
+  id             Int                     @id(map: "PK__Dashboar__3213E83F1CFA1D7B") @default(autoincrement())
+  categoryId     Int                     @map("categoriaId")
+  html           String                  @db.NVarChar(Max)
+  name           String                  @map("nome") @db.NVarChar(255)
+  description    String                  @map("descricao") @db.NVarChar(Max)
+  createdAt      DateTime                @default(now(), map: "DF__Dashboard__criad__5AF1B015") @map("criadoEm")
+  updatedAt      DateTime                @default(now(), map: "DF__Dashboard__atual__5BE5D44E") @updatedAt @map("atualizadoEm")
+  text           String                  @default("", map: "DF__Dashboard__texto__6292D1DD") @map("texto") @db.NVarChar(Max)
+  category       ProtocolCategory        @relation(fields: [categoryId], references: [id], onUpdate: NoAction, map: "FK_DashboardProtocolo_Categoria")
+  discriminators ProtocolDiscriminator[]
+  questions      ProtocolQuestion[]
+
+  @@map("DashboardProtocolo")
+}
+
+model ProtocolQuestion {
+  id         Int      @id(map: "PK__Dashboar__3213E83FDFB9E085") @default(autoincrement())
+  protocolId Int      @map("protocolo_id")
+  question   String   @map("questao") @db.NVarChar(Max)
+  order      Int      @map("ordem")
+  createdAt  DateTime @default(now(), map: "DF__Dashboard__criad__47A9D177") @map("criado_em")
+  updatedAt  DateTime @default(now(), map: "DF__Dashboard__atual__489DF5B0") @updatedAt @map("atualizado_em")
+  protocol   Protocol @relation(fields: [protocolId], references: [id], onUpdate: NoAction, map: "FK__Dashboard__proto__499219E9")
+
+  @@map("DashboardProtocoloQuestao")
+}
+
+model ProtocolDiscriminator {
+  id          Int             @id(map: "PK__Dashboar__3213E83FC7B520A5") @default(autoincrement())
+  protocolId  Int             @map("protocolo_id")
+  conductId   String          @map("conduta_id") @db.NVarChar(255)
+  description String          @map("descricao") @db.NVarChar(Max)
+  weight      Int             @map("peso")
+  createdAt   DateTime        @default(now(), map: "DF__Dashboard__criad__4C6E8694") @map("criado_em")
+  updatedAt   DateTime        @default(now(), map: "DF__Dashboard__atual__4D62AACD") @updatedAt @map("atualizado_em")
+  conduct     ProtocolConduct @relation(fields: [conductId], references: [id], onUpdate: NoAction, map: "FK__Dashboard__condu__4F4AF33F")
+  protocol    Protocol        @relation(fields: [protocolId], references: [id], onUpdate: NoAction, map: "FK__Dashboard__proto__4E56CF06")
+
+  @@map("DashboardProtocoloDiscriminador")
+}
+
+model ProtocolConduct {
+  id             String                  @id(map: "PK__Dashboar__3213E83F72CFBDDD") @db.NVarChar(255)
+  description    String                  @map("descricao") @db.NVarChar(Max)
+  createdAt      DateTime                @default(now(), map: "DF__Dashboard__criad__43D94093") @map("criado_em")
+  updatedAt      DateTime                @default(now(), map: "DF__Dashboard__atual__44CD64CC") @updatedAt @map("atualizado_em")
+  discriminators ProtocolDiscriminator[]
+
+  @@map("DashboardProtocoloConduta")
+}
+
+model Conclusao {
+  OcorrenciaID        BigInt
+  VitimaID            Int
+  FichaNM             Int
+  UnidadeCOD          String?   @db.NVarChar(8)
+  VeiculoID           Int?
+  TransporteID        Int?
+  AtendConclusaoID    Int?
+  IntercorrenciaID    Int?
+  IntercorrenciaOutra String?   @db.NVarChar(50)
+  ObitoID             Int?
+  EnfermagemOBS       String?   @db.NText
+  MedicasOBS          String?   @db.NText
+  RegistroDT          DateTime? @db.SmallDateTime
+  OperadorID          Int?
+
+  @@id([OcorrenciaID, VitimaID, FichaNM], map: "PK_Conclusao")
+}
+
+model FORMEQUIPE_OcorrenciaVeiculoProfissional {
+  OcorrenciaID   BigInt
+  VeiculoID      Int
+  ProfissionalID Int
+  VeiculoSEQ     Int
+  RegistroDT     DateTime? @db.DateTime
+  OperadorID     Int?
+  Status         String?   @db.NVarChar(1)
+
+  @@id([OcorrenciaID, VeiculoID, ProfissionalID, VeiculoSEQ], map: "PK_FORMEQUIPE_OcorrenciaVeiculoProfissional")
+}
+
+model TB_BAIRRO {
+  Cod_Bairro          Int                 @id(map: "PK_TB_BAIRRO") @default(autoincrement())
+  Cod_Municipio       String              @db.VarChar(8)
+  DistritoCOD         Int?
+  BairroDS            String?             @db.VarChar(255)
+  DTHR                DateTime?           @db.DateTime
+  REGATIVO            String?             @db.VarChar(1)
+  AtivacaoDT          DateTime?           @db.SmallDateTime
+  InativacaoDT        DateTime?           @db.SmallDateTime
+  TBS_Municipios_IBGE TBS_Municipios_IBGE @relation(fields: [Cod_Municipio], references: [Cod_Municipio], onUpdate: NoAction, map: "FK_TB_BAIRRO_TBS_Municipios_IBGE")
+}
+
+model TBS_Municipios_IBGE {
+  Cod_Municipio String      @id(map: "PK_TBS_Municipios_IBGE") @db.VarChar(8)
+  Municipio     String?     @db.NVarChar(255)
+  UF            Float?
+  DV_Municipio  Float?
+  RegAtivo      String?     @db.NVarChar(1)
+  AtivacaoDT    DateTime?   @db.SmallDateTime
+  InativacaoDT  DateTime?   @db.SmallDateTime
+  TB_BAIRRO     TB_BAIRRO[]
+
+  @@index([Municipio], map: "idx_TBS_Municipios")
+}
+
+model Gender {
+  id          Int       @id(map: "PK_TBS_Sexo") @default(autoincrement()) @map("SexoCOD")
+  description String?   @map("SexoDS") @db.VarChar(20)
+  Patient     Patient[]
+}

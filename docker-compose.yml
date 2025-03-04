@@ -7,30 +7,33 @@ services:
     ports:
       - "3333:3333"
     environment:
+      TZ_OFFSET: 3
       TZ: UTC
       PORT: 3333
       HOST: "0.0.0.0"
       LOG_LEVEL: info
       APP_KEY: 4G28h2DdHB3y5tfLU7NgCxpWDD7UbMR2
       SESSION_DRIVER: cookie
-    networks:
-      - app-network
+      BETTER_AUTH_SECRET: 4G28h2DdH
+      BETTER_AUTH_URL: http://localhost:3333
+    # networks:
+    #   - app-network
 
   frontend:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:3333
     container_name: nextjs-frontend
     ports:
       - "3000:3000"
     environment:
       PORT: 3000
-      NEXT_PUBLIC_API_URL: "http://adonis-backend:3333"
-    depends_on:
-      - backend
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    #depends_on:
+    #  - backend
+    #networks:
+    #  - app-network
+##networks:
+##  app-network:
+##    driver: bridge

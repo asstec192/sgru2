@@ -10,8 +10,8 @@ import {
   UserCog,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavLogo } from "@/components/nav-logo";
+import { NavMain } from "@/components/sidebar/nav-main";
+import { NavLogo } from "@/components/sidebar/nav-logo";
 import {
   Sidebar,
   SidebarContent,
@@ -19,13 +19,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@workspace/ui/components/sidebar";
+import { NavUser } from "./nav-user";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -99,7 +96,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter></SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
